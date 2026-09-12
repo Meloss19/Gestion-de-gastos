@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Sistema de Gestión: Producción o Compra/Venta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistema de Gestión: Negocio y Hogar</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -13,6 +14,8 @@
       --warning-hover: #b45309;
       --danger: #dc2626;
       --danger-hover: #b91c1c;
+      --indigo: #6366f1;
+      --indigo-hover: #4f46e5;
       --dark: #0f172a;
       --slate: #64748b;
       --light: #f8fafc;
@@ -20,41 +23,51 @@
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 920px;
-      margin: 20px auto;
-      padding: 0 16px 40px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 12px 40px;
       background-color: #f1f5f9;
       color: #334155;
     }
+
     h1 {
       text-align: center;
       color: var(--dark);
-      margin-bottom: 15px;
-      font-size: 26px;
+      margin: 10px 0 20px;
+      font-size: clamp(20px, 5vw, 26px);
       font-weight: 800;
       letter-spacing: -0.5px;
     }
 
-    /* Barra de Selector de Modo */
+    /* Barra de Selector de Modo Responsive */
     .selector-modo {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 20px;
     }
+
     .btn-modo {
       background: white;
       border: 1px solid var(--border);
       color: var(--slate);
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 10px 12px;
+      border-radius: 12px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      text-align: center;
       transition: all 0.2s;
     }
+
     .btn-modo.activo {
       background: var(--dark);
       color: white;
@@ -67,54 +80,65 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       overflow: hidden;
       transition: all 0.3s ease;
     }
+
     .paso-card.resaltado {
       box-shadow: 0 0 0 3px #86efac, 0 8px 16px rgba(22, 163, 74, 0.15);
     }
 
-    /* Encabezados Clicables / Acordeón */
+    /* Encabezados */
     .paso-header {
-      padding: 14px 20px;
+      padding: 14px 16px;
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       color: white;
       cursor: pointer;
       user-select: none;
-      transition: opacity 0.2s;
+      touch-action: manipulation;
     }
+
     .paso-header:hover { opacity: 0.95; }
-    .header-titulo { display: flex; align-items: center; gap: 10px; }
-    .header-icono-toggle { font-size: 14px; transition: transform 0.3s ease; }
+    .header-titulo { display: flex; align-items: center; gap: 8px; }
+    .header-icono-toggle { font-size: 13px; transition: transform 0.3s ease; }
     .header-icono-toggle.rotado { transform: rotate(-90deg); }
 
     .header-1 { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
     .header-2 { background: linear-gradient(135deg, #d97706, #b45309); }
     .header-3 { background: linear-gradient(135deg, #16a34a, #15803d); }
     .header-4 { background: linear-gradient(135deg, #1e293b, #0f172a); }
-    
-    .paso-body { padding: 20px; }
+    .header-hogar-gastos { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .header-hogar-ingresos { background: linear-gradient(135deg, #10b981, #047857); }
+    .header-hogar-dash { background: linear-gradient(135deg, #6366f1, #4338ca); }
+    .header-resumen-global { background: linear-gradient(135deg, #0f172a, #334155); }
+
+    .paso-body { padding: 16px; }
     .paso-body.oculto { display: none; }
 
+    /* Inputs y Formularios Adaptables */
     .form-row {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
       gap: 10px;
       margin-bottom: 12px;
     }
+
     input, select {
-      padding: 10px 14px;
+      width: 100%;
+      padding: 10px 12px;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
       font-size: 14px;
       background: #fff;
+      min-height: 42px;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
+
     input:focus, select:focus {
       outline: none;
       border-color: var(--primary);
@@ -122,7 +146,8 @@
     }
 
     button {
-      padding: 10px 18px;
+      min-height: 42px;
+      padding: 10px 14px;
       border-radius: 8px;
       border: none;
       font-weight: 600;
@@ -134,31 +159,37 @@
       gap: 6px;
       transition: all 0.2s ease;
       box-shadow: var(--shadow-sm);
+      touch-action: manipulation;
     }
+
     button:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
     button:active { transform: translateY(0); }
+
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-warning { background: var(--warning); color: white; }
     .btn-warning:hover { background: var(--warning-hover); }
     .btn-success { background: var(--success); color: white; }
     .btn-success:hover { background: var(--success-hover); }
-    .btn-danger { background: var(--danger); color: white; padding: 4px 9px; font-size: 12px; }
+    .btn-indigo { background: var(--indigo); color: white; }
+    .btn-indigo:hover { background: var(--indigo-hover); }
+    .btn-danger { background: var(--danger); color: white; padding: 6px 10px; font-size: 12px; min-height: 32px; }
     .btn-danger:hover { background: var(--danger-hover); }
     
     .btn-secondary-outline {
       background: #ffffff;
       color: var(--slate);
       border: 1px solid #cbd5e1;
-      padding: 7px 14px;
+      padding: 7px 12px;
       font-size: 13px;
     }
     .btn-secondary-outline:hover { background: #f8fafc; color: var(--dark); border-color: #94a3b8; }
+    
     .btn-danger-outline {
       background: #ffffff;
       color: var(--danger);
       border: 1px solid #fecaca;
-      padding: 7px 14px;
+      padding: 7px 12px;
       font-size: 13px;
     }
     .btn-danger-outline:hover { background: #fef2f2; border-color: #f87171; }
@@ -168,8 +199,8 @@
       color: white;
       width: 100%;
       margin-top: 14px;
-      padding: 13px;
-      font-size: 15px;
+      padding: 12px;
+      font-size: 14px;
       border-radius: 8px;
     }
     .btn-stock-update:hover { background: linear-gradient(135deg, #0369a1, #075985); }
@@ -178,21 +209,21 @@
     .sub-seccion {
       background: #f8fafc;
       border: 1px solid var(--border);
-      padding: 16px;
+      padding: 14px;
       border-radius: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
-    .sub-seccion h4 { margin: 0 0 12px 0; font-size: 14px; color: #475569; font-weight: 700; }
+    .sub-seccion h4 { margin: 0 0 10px 0; font-size: 14px; color: #475569; font-weight: 700; }
 
     details.historial-box {
-      margin-top: 15px;
+      margin-top: 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: #f8fafc;
       overflow: hidden;
     }
     details.historial-box summary {
-      padding: 12px 16px;
+      padding: 10px 14px;
       cursor: pointer;
       font-size: 13px;
       font-weight: 600;
@@ -201,16 +232,17 @@
       background: #f1f5f9;
     }
     details.historial-box summary:hover { background: #e2e8f0; }
+
     .scroll-container {
-      max-height: 200px;
+      max-height: 220px;
       overflow-y: auto;
-      padding: 12px;
+      padding: 10px;
       background: #fff;
     }
 
     ul.lista-items { list-style: none; padding: 0; margin: 0; }
     ul.lista-items li {
-      padding: 9px 12px;
+      padding: 8px 10px;
       background: white;
       border: 1px solid #edf2f7;
       border-radius: 6px;
@@ -218,257 +250,455 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+      font-size: 13px;
+      gap: 8px;
     }
 
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
     }
     .kpi-box {
-      padding: 16px;
+      padding: 12px 10px;
       background: white;
       border: 1px solid var(--border);
       border-radius: 10px;
       text-align: center;
       box-shadow: var(--shadow-sm);
     }
-    .kpi-box span { font-size: 12px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
-    .kpi-box strong { display: block; font-size: 22px; margin-top: 6px; color: #0f172a; }
+    .kpi-box span { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px; }
+    .kpi-box strong { display: block; font-size: clamp(16px, 4vw, 20px); margin-top: 4px; color: #0f172a; }
 
     .alerta-balance {
-      padding: 15px;
+      padding: 12px 14px;
       border-radius: 8px;
-      margin-bottom: 14px;
-      font-size: 15px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      line-height: 1.4;
     }
     .alerta-ganancia { background: #dcfce7; color: #14532d; border: 1px solid #bbf7d0; }
     .alerta-perdida { background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca; }
     .alerta-neutral { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
+    /* Envoltura para Tablas Responsivas en Móviles */
+    .tabla-responsive-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+
     table.tabla-stock {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 10px;
+      font-size: 12px;
       background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
+      min-width: 480px;
     }
+
     table.tabla-stock th, table.tabla-stock td {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
       text-align: left;
     }
+
     table.tabla-stock th { background: #f8fafc; font-weight: 600; color: #475569; }
+
+    /* Ajustes específicos para móviles */
+    @media (max-width: 600px) {
+      body { padding: 10px 8px 30px; }
+      .paso-body { padding: 12px; }
+      .form-row { grid-template-columns: 1fr; gap: 8px; }
+      .selector-modo { grid-template-columns: 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <h1>📊 Panel de Control: Compras, Recetas y Ventas</h1>
+  <h1>📊 Panel: Negocio y Hogar</h1>
 
-  <!-- Selector rápido de vista -->
+  <!-- Selector de Vistas -->
   <div class="selector-modo">
-    <button class="btn-modo activo" id="modoCocinaBtn" onclick="cambiarModo('cocina')">🧁 Modo Producción</button>
-    <button class="btn-modo" id="modoDirectoBtn" onclick="cambiarModo('directo')">📦 Modo Compra y Venta</button>
+    <button class="btn-modo activo" id="modoCocinaBtn" onclick="cambiarModo('cocina')">🧁 Producción</button>
+    <button class="btn-modo" id="modoDirectoBtn" onclick="cambiarModo('directo')">📦 Compra/Venta</button>
+    <button class="btn-modo" id="modoHogarBtn" onclick="cambiarModo('hogar')">🏠 Hogar</button>
+    <button class="btn-modo" id="modoResumenBtn" onclick="cambiarModo('resumen')">🌐 Resumen Global</button>
   </div>
 
-  <!-- PASO 1: COMPRAS / STOCK -->
-  <div class="paso-card" id="cardPasoStock">
-    <div class="paso-header header-1" onclick="togglePaso('cuerpoPaso1', 'iconoPaso1')">
-      <div class="header-titulo">
-        <span>🛒</span> Registrar Compras de Insumos / Mercadería
-      </div>
-      <span class="header-icono-toggle" id="iconoPaso1">▼</span>
-    </div>
-    <div class="paso-body" id="cuerpoPaso1">
-      <div class="form-row">
-        <input type="text" id="ingNombre" placeholder="Nombre (Harina, Ladrillos, Huevos...)">
-        <input type="number" id="ingCantidad" placeholder="Cantidad" step="any" min="0">
-        <select id="ingTipo" onchange="actualizarCamposCompra()">
-          <option value="cantidad">Unidades / Piezas</option>
-          <option value="libras">Libras (lb)</option>
-          <option value="litros">Litros (L)</option>
-          <option value="botellas_ml">Botella / Envase (en ml)</option>
-          <option value="galones">Galones (gal)</option>
-        </select>
-        <input type="number" id="ingContenidoMl" placeholder="¿Cuántos ml trae cada botella? (ej. 825)" style="display:none;" step="any" min="0">
-        <input type="number" id="ingPrecio" placeholder="Precio x unidad ($)" step="any" min="0">
-        <button class="btn-primary" id="btnGuardarIng" onclick="guardarIngrediente()">+ Guardar</button>
-      </div>
-      
-      <details class="historial-box" open>
-        <summary>📦 Lista de Mercadería Comprada (<span id="countIngredientes">0</span>)</summary>
-        <div class="scroll-container">
-          <ul class="lista-items" id="listaIngredientes"></ul>
+  <!-- SECCIÓN NEGOCIO -->
+  <div id="seccionNegocio">
+    <!-- PASO 1: COMPRAS / STOCK -->
+    <div class="paso-card" id="cardPasoStock">
+      <div class="paso-header header-1" onclick="togglePaso('cuerpoPaso1', 'iconoPaso1')">
+        <div class="header-titulo">
+          <span>🛒</span> Registrar Insumos / Mercadería
         </div>
-      </details>
-
-      <p style="margin: 14px 0 0; font-size: 14px;"><strong>Inversión Total en Compras: $<span id="totalCostos">0.00</span></strong></p>
-    </div>
-  </div>
-
-  <!-- PASO 2: RECETARIO & COCINAR (OCULTABLE SEGÚN MODO) -->
-  <div class="paso-card" id="cardPaso2">
-    <div class="paso-header header-2" onclick="togglePaso('cuerpoPaso2', 'iconoPaso2')">
-      <div class="header-titulo">
-        <span>🥣</span> Recetario y Producción (Cocina / Manufactura)
+        <span class="header-icono-toggle" id="iconoPaso1">▼</span>
       </div>
-      <span class="header-icono-toggle" id="iconoPaso2">▼</span>
-    </div>
-    <div class="paso-body" id="cuerpoPaso2">
-      
-      <div class="sub-seccion">
-        <h4>📝 Crear Nueva Receta Base</h4>
+      <div class="paso-body" id="cuerpoPaso1">
         <div class="form-row">
-          <select id="loteIngredienteSelect" onchange="adaptarOpcionesUnidad()"></select>
-          <input type="number" id="loteCantidad" placeholder="Cantidad x tanda" step="any" min="0">
-          <select id="loteUnidad"></select>
-          <button class="btn-primary" onclick="agregarAlLote()">+ Ingrediente</button>
-        </div>
-        <ul class="lista-items" id="listaLote" style="margin-bottom: 12px;"></ul>
-        <div class="form-row">
-          <input type="text" id="loteProdNombre" placeholder="Nombre receta (ej. Panquecitos)">
-          <input type="number" id="loteUnidadesObtenidas" placeholder="Unidades que rinde (ej. 16)" min="1">
-          <button class="btn-warning" onclick="guardarRecetaEnCatalogo()">💾 Guardar Receta</button>
-        </div>
-      </div>
-
-      <div class="sub-seccion" style="background: #fffbeb; border-color: #fde68a;">
-        <h4>⚡ Hornear / Producir desde Receta Guardada</h4>
-        <div class="form-row">
-          <select id="selectRecetasGuardadas" style="grid-column: span 2;" onchange="actualizarVisibilidadBotonesReceta()"></select>
-          <input type="number" id="cantTandasRapidas" placeholder="¿Cuántas tandas?" value="1" min="1" step="1">
-          <button class="btn-warning" onclick="producirDesdeRecetario()">⚡ Producir y Llevar a Vender</button>
+          <input type="text" id="ingNombre" placeholder="Nombre (Harina, Huevos...)">
+          <input type="number" id="ingCantidad" placeholder="Cantidad" step="any" min="0">
+          <select id="ingTipo" onchange="actualizarCamposCompra()">
+            <option value="cantidad">Unidades / Piezas</option>
+            <option value="libras">Libras (lb)</option>
+            <option value="litros">Litros (L)</option>
+            <option value="botellas_ml">Botella / Envase (en ml)</option>
+            <option value="galones">Galones (gal)</option>
+          </select>
+          <input type="number" id="ingContenidoMl" placeholder="¿Cuántos ml trae la botella?" style="display:none;" step="any" min="0">
+          <input type="number" id="ingPrecio" placeholder="Precio x unidad ($)" step="any" min="0">
+          <button class="btn-primary" id="btnGuardarIng" onclick="guardarIngrediente()">+ Guardar Insumo</button>
         </div>
         
-        <div id="contenedorAccionesReceta" style="display: none; gap: 10px; margin-top: 10px;">
-          <button class="btn-secondary-outline" onclick="cargarRecetaParaEditar()">✏️ Modificar Receta</button>
-          <button class="btn-danger-outline" onclick="eliminarRecetaSeleccionada()">❌ Eliminar Receta</button>
-        </div>
-      </div>
-
-      <details class="historial-box">
-        <summary>📜 Ver Historial de Producción Cocinada (<span id="countHistorial">0</span> registros)</summary>
-        <div class="scroll-container">
-          <ul class="lista-items" id="listaHistorialProduccion"></ul>
-        </div>
-      </details>
-
-    </div>
-  </div>
-
-  <!-- PASO 3: VENTAS -->
-  <div class="paso-card" id="cardPasoVentas">
-    <div class="paso-header header-3" onclick="togglePaso('cuerpoPaso3', 'iconoPaso3')">
-      <div class="header-titulo">
-        <span>💰</span> Registro de Ventas (Ingresos)
-      </div>
-      <span class="header-icono-toggle" id="iconoPaso3">▼</span>
-    </div>
-    <div class="paso-body" id="cuerpoPaso3">
-      <div class="form-row">
-        <input type="text" id="prodNombre" placeholder="Producto vendido (Ladrillos, Pan...)">
-        <input type="number" id="prodCantidad" placeholder="Cantidad vendida" step="any" min="0">
-        <select id="prodTipo">
-          <option value="unidades">Unidades / Piezas</option>
-          <option value="libras">Libras (Peso)</option>
-        </select>
-        <input type="number" id="prodPrecio" placeholder="Precio venta c/u ($)" step="any" min="0">
-        <button class="btn-success" onclick="guardarProducto()">+ Registrar Venta</button>
-      </div>
-
-      <details class="historial-box" open>
-        <summary>🧾 Ver Ventas Registradas (<span id="countVentas">0</span>)</summary>
-        <div class="scroll-container">
-          <ul class="lista-items" id="listaProductos"></ul>
-        </div>
-      </details>
-
-      <p style="margin: 14px 0 0; font-size: 14px;"><strong>Total Cobrado en Ventas: $<span id="totalVentas">0.00</span></strong></p>
-    </div>
-  </div>
-
-  <!-- PASO 4: DASHBOARD FINANCIERO -->
-  <div class="paso-card">
-    <div class="paso-header header-4" onclick="togglePaso('cuerpoPaso4', 'iconoPaso4')">
-      <div class="header-titulo">
-        <span>📊</span> Resultados Financieros, Stock y Cierres
-      </div>
-      <span class="header-icono-toggle" id="iconoPaso4">▼</span>
-    </div>
-    <div class="paso-body" id="cuerpoPaso4">
-      
-      <div id="cajaResultadoTanda" class="alerta-balance alerta-neutral">Ingresa compras y ventas para ver el balance actual.</div>
-      <div id="cajaResultadoGlobal" class="alerta-balance alerta-neutral" style="display:none;"></div>
-
-      <div class="kpi-grid" id="detallesFinancieros" style="display:none;">
-        <div class="kpi-box">
-          <span id="kpiTituloCosto">Costo Mercadería Vendida</span>
-          <strong id="costoInsumosUsados">$0.00</strong>
-        </div>
-        <div class="kpi-box">
-          <span>Ventas Totales</span>
-          <strong id="ventasTotalesResumen" style="color: var(--success);">$0.00</strong>
-        </div>
-        <div class="kpi-box">
-          <span>Inversión en Compras</span>
-          <strong id="invTotalResumen">$0.00</strong>
-        </div>
-        <div class="kpi-box">
-          <span>Valor Stock Sobrante</span>
-          <strong id="inventarioRestante" style="color: var(--primary);">$0.00</strong>
-        </div>
-      </div>
-
-      <div id="seccionSobrantesDetalle" style="display:none; margin-top: 15px;">
-        <h4 style="margin: 0 0 8px;">📦 Desglose Físico de Stock Sobrante en Despensa:</h4>
-        <table class="tabla-stock">
-          <thead>
-            <tr>
-              <th>Producto / Insumo</th>
-              <th>Disponible Real</th>
-              <th>Valor Restante</th>
-            </tr>
-          </thead>
-          <tbody id="cuerpoTablaSobrantes"></tbody>
-        </table>
-
-        <button class="btn-stock-update" onclick="actualizarInventarioDesdeSobrantes()">
-          🔄 Cerrar Ciclo y Aplicar Stock Sobrante como Nuevo Inventario
-        </button>
-      </div>
-
-      <details class="historial-box" style="margin-top: 20px;">
-        <summary>📚 Historial Histórico de Ganancias y Cierres Pasados (<span id="countCierres">0</span>)</summary>
-        <div class="scroll-container" style="max-height: 250px;">
-          <div style="padding: 5px 0 10px; font-size: 14px;">
-            <strong>Ganancia Neta Total Acumulada: <span id="gananciaHistoricaTotal" style="color: var(--success);">$0.00</span></strong>
+        <details class="historial-box" open>
+          <summary>📦 Lista de Mercadería Comprada (<span id="countIngredientes">0</span>)</summary>
+          <div class="scroll-container">
+            <ul class="lista-items" id="listaIngredientes"></ul>
           </div>
+        </details>
+
+        <p style="margin: 12px 0 0; font-size: 13px;"><strong>Inversión Total en Compras: $<span id="totalCostos">0.00</span></strong></p>
+      </div>
+    </div>
+
+    <!-- PASO 2: RECETARIO & COCINAR -->
+    <div class="paso-card" id="cardPaso2">
+      <div class="paso-header header-2" onclick="togglePaso('cuerpoPaso2', 'iconoPaso2')">
+        <div class="header-titulo">
+          <span>🥣</span> Recetario y Producción
+        </div>
+        <span class="header-icono-toggle" id="iconoPaso2">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoPaso2">
+        <div class="sub-seccion">
+          <h4>📝 Crear Nueva Receta Base</h4>
+          <div class="form-row">
+            <select id="loteIngredienteSelect" onchange="adaptarOpcionesUnidad()"></select>
+            <input type="number" id="loteCantidad" placeholder="Cantidad x tanda" step="any" min="0">
+            <select id="loteUnidad"></select>
+            <button class="btn-primary" onclick="agregarAlLote()">+ Ingrediente</button>
+          </div>
+          <ul class="lista-items" id="listaLote" style="margin-bottom: 12px;"></ul>
+          <div class="form-row">
+            <input type="text" id="loteProdNombre" placeholder="Nombre receta (ej. Panquecitos)">
+            <input type="number" id="loteUnidadesObtenidas" placeholder="Unidades que rinde (ej. 16)" min="1">
+            <button class="btn-warning" onclick="guardarRecetaEnCatalogo()">💾 Guardar Receta</button>
+          </div>
+        </div>
+
+        <div class="sub-seccion" style="background: #fffbeb; border-color: #fde68a;">
+          <h4>⚡ Hornear / Producir desde Recetario</h4>
+          <div class="form-row">
+            <select id="selectRecetasGuardadas" onchange="actualizarVisibilidadBotonesReceta()"></select>
+            <input type="number" id="cantTandasRapidas" placeholder="¿Cuántas tandas?" value="1" min="1" step="1">
+            <button class="btn-warning" onclick="producirDesdeRecetario()">⚡ Producir y Pasar a Venta</button>
+          </div>
+          <div id="contenedorAccionesReceta" style="display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+            <button class="btn-secondary-outline" style="flex:1;" onclick="cargarRecetaParaEditar()">✏️ Editar</button>
+            <button class="btn-danger-outline" style="flex:1;" onclick="eliminarRecetaSeleccionada()">❌ Eliminar</button>
+          </div>
+        </div>
+
+        <details class="historial-box">
+          <summary>📜 Historial de Producción (<span id="countHistorial">0</span> registros)</summary>
+          <div class="scroll-container">
+            <ul class="lista-items" id="listaHistorialProduccion"></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- PASO 3: VENTAS -->
+    <div class="paso-card" id="cardPasoVentas">
+      <div class="paso-header header-3" onclick="togglePaso('cuerpoPaso3', 'iconoPaso3')">
+        <div class="header-titulo">
+          <span>💰</span> Registro de Ventas (Negocio)
+        </div>
+        <span class="header-icono-toggle" id="iconoPaso3">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoPaso3">
+        <div class="form-row">
+          <input type="text" id="prodNombre" placeholder="Producto vendido">
+          <input type="number" id="prodCantidad" placeholder="Cantidad vendida" step="any" min="0">
+          <select id="prodTipo">
+            <option value="unidades">Unidades / Piezas</option>
+            <option value="libras">Libras (Peso)</option>
+          </select>
+          <input type="number" id="prodPrecio" placeholder="Precio venta c/u ($)" step="any" min="0">
+          <button class="btn-success" onclick="guardarProducto()">+ Registrar Venta</button>
+        </div>
+
+        <details class="historial-box" open>
+          <summary>🧾 Ventas Registradas (<span id="countVentas">0</span>)</summary>
+          <div class="scroll-container">
+            <ul class="lista-items" id="listaProductos"></ul>
+          </div>
+        </details>
+
+        <p style="margin: 12px 0 0; font-size: 13px;"><strong>Total Cobrado: $<span id="totalVentas">0.00</span></strong></p>
+      </div>
+    </div>
+
+    <!-- PASO 4: DASHBOARD FINANCIERO NEGOCIO -->
+    <div class="paso-card">
+      <div class="paso-header header-4" onclick="togglePaso('cuerpoPaso4', 'iconoPaso4')">
+        <div class="header-titulo">
+          <span>📊</span> Dashboard Negocio, Stock y Cierres
+        </div>
+        <span class="header-icono-toggle" id="iconoPaso4">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoPaso4">
+        <div id="cajaResultadoTanda" class="alerta-balance alerta-neutral">Ingresa compras y ventas para ver el balance actual.</div>
+        <div id="cajaResultadoGlobal" class="alerta-balance alerta-neutral" style="display:none;"></div>
+
+        <div class="kpi-grid" id="detallesFinancieros" style="display:none;">
+          <div class="kpi-box">
+            <span>Costo Mercadería</span>
+            <strong id="costoInsumosUsados">$0.00</strong>
+          </div>
+          <div class="kpi-box">
+            <span>Ventas Totales</span>
+            <strong id="ventasTotalesResumen" style="color: var(--success);">$0.00</strong>
+          </div>
+          <div class="kpi-box">
+            <span>Inversión</span>
+            <strong id="invTotalResumen">$0.00</strong>
+          </div>
+          <div class="kpi-box">
+            <span>Stock Sobrante</span>
+            <strong id="inventarioRestante" style="color: var(--primary);">$0.00</strong>
+          </div>
+        </div>
+
+        <div id="seccionSobrantesDetalle" style="display:none; margin-top: 14px;">
+          <h4 style="margin: 0 0 6px; font-size: 13px;">📦 Desglose de Stock Sobrante:</h4>
+          <div class="tabla-responsive-wrapper">
+            <table class="tabla-stock">
+              <thead>
+                <tr>
+                  <th>Insumo</th>
+                  <th>Disponible Real</th>
+                  <th>Valor Restante</th>
+                </tr>
+              </thead>
+              <tbody id="cuerpoTablaSobrantes"></tbody>
+            </table>
+          </div>
+
+          <button class="btn-stock-update" onclick="actualizarInventarioDesdeSobrantes()">
+            🔄 Cerrar Ciclo y Llevar Sobrante como Nuevo Stock
+          </button>
+        </div>
+
+        <details class="historial-box" style="margin-top: 16px;">
+          <summary>📚 Historial de Ganancias Pasadas (<span id="countCierres">0</span>)</summary>
+          <div class="scroll-container" style="max-height: 250px;">
+            <div style="padding: 4px 0 8px; font-size: 13px;">
+              <strong>Ganancia Neta Total: <span id="gananciaHistoricaTotal" style="color: var(--success);">$0.00</span></strong>
+            </div>
+            <div class="tabla-responsive-wrapper">
+              <table class="tabla-stock">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Ventas</th>
+                    <th>Costo</th>
+                    <th>Ganancia</th>
+                    <th>Stock</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="cuerpoTablaCierres"></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <button class="btn-full btn-secondary-outline" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-top: 16px;" onclick="limpiarTodo()">🗑️ Reiniciar Datos del Negocio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN HOGAR -->
+  <div id="seccionHogar" style="display:none;">
+    <!-- GASTOS -->
+    <div class="paso-card">
+      <div class="paso-header header-hogar-gastos" onclick="togglePaso('cuerpoHogarGastos', 'iconoHogarG')">
+        <div class="header-titulo">
+          <span>💸</span> Gastos de la Casa
+        </div>
+        <span class="header-icono-toggle" id="iconoHogarG">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoHogarGastos">
+        <div class="form-row">
+          <input type="text" id="hogarGastoConcepto" placeholder="Concepto (Luz, Alquiler...)">
+          <select id="hogarGastoCategoria">
+            <option value="Servicios">💡 Servicios (Luz, Agua, Net)</option>
+            <option value="Supermercado">🛒 Supermercado / Comida</option>
+            <option value="Vivienda">🏠 Alquiler / Hipoteca</option>
+            <option value="Transporte">🚗 Transporte / Gasolina</option>
+            <option value="Salud">💊 Salud / Farmacia</option>
+            <option value="Otros">📦 Otros Gastos</option>
+          </select>
+          <input type="number" id="hogarGastoMonto" placeholder="Monto ($)" step="any" min="0">
+          <button class="btn-danger" style="min-height: 42px; font-size: 14px;" onclick="guardarGastoHogar()">+ Registrar Gasto</button>
+        </div>
+
+        <details class="historial-box" open>
+          <summary>📋 Gastos Registrados (<span id="countGastosHogar">0</span>)</summary>
+          <div class="scroll-container">
+            <ul class="lista-items" id="listaGastosHogar"></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- INGRESOS -->
+    <div class="paso-card">
+      <div class="paso-header header-hogar-ingresos" onclick="togglePaso('cuerpoHogarIngresos', 'iconoHogarI')">
+        <div class="header-titulo">
+          <span>💵</span> Ingresos Familiares / Personales
+        </div>
+        <span class="header-icono-toggle" id="iconoHogarI">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoHogarIngresos">
+        <div class="form-row">
+          <input type="text" id="hogarIngresoConcepto" placeholder="Concepto (Sueldo, Extra...)">
+          <select id="hogarIngresoCategoria">
+            <option value="Sueldo">💼 Sueldo Principal</option>
+            <option value="Negocio">📈 Retiro del Negocio</option>
+            <option value="Extra">✨ Freelance / Extra</option>
+            <option value="Otros">💰 Otros Ingresos</option>
+          </select>
+          <input type="number" id="hogarIngresoMonto" placeholder="Monto ($)" step="any" min="0">
+          <button class="btn-success" onclick="guardarIngresoHogar()">+ Registrar Ingreso</button>
+        </div>
+
+        <details class="historial-box" open>
+          <summary>📋 Ingresos Registrados (<span id="countIngresosHogar">0</span>)</summary>
+          <div class="scroll-container">
+            <ul class="lista-items" id="listaIngresosHogar"></ul>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- DASHBOARD HOGAR -->
+    <div class="paso-card">
+      <div class="paso-header header-hogar-dash" onclick="togglePaso('cuerpoHogarDash', 'iconoHogarD')">
+        <div class="header-titulo">
+          <span>📊</span> Balance Financiero del Hogar
+        </div>
+        <span class="header-icono-toggle" id="iconoHogarD">▼</span>
+      </div>
+      <div class="paso-body" id="cuerpoHogarDash">
+        <div id="cajaResultadoHogar" class="alerta-balance alerta-neutral">Registra ingresos o gastos para ver tu balance personal.</div>
+
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <span>Ingresos Hogar</span>
+            <strong id="hogarKpiIngresos" style="color: var(--success);">$0.00</strong>
+          </div>
+          <div class="kpi-box">
+            <span>Gastos Hogar</span>
+            <strong id="hogarKpiGastos" style="color: var(--danger);">$0.00</strong>
+          </div>
+          <div class="kpi-box">
+            <span>Disponible</span>
+            <strong id="hogarKpiBalance">$0.00</strong>
+          </div>
+        </div>
+
+        <button class="btn-full btn-secondary-outline" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-top: 14px;" onclick="limpiarHogar()">🗑️ Reiniciar Datos del Hogar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN RESUMEN GLOBAL CONSOLIDADO -->
+  <div id="seccionResumenGlobal" style="display:none;">
+    <div class="paso-card">
+      <div class="paso-header header-resumen-global">
+        <div class="header-titulo">
+          <span>🌐</span> Resumen Total Consolidado
+        </div>
+      </div>
+      <div class="paso-body">
+        
+        <div id="cajaDiagnosticoGlobal" class="alerta-balance alerta-neutral">Cargando métricas consolidadas...</div>
+
+        <!-- KPIs GLOBALES -->
+        <div class="kpi-grid">
+          <div class="kpi-box">
+            <span>Entradas Totales</span>
+            <strong id="resumenKpiEntradas" style="color: var(--success);">$0.00</strong>
+            <small style="color:#64748b; font-size:10px;">Ventas + Sueldos</small>
+          </div>
+          <div class="kpi-box">
+            <span>Salidas Totales</span>
+            <strong id="resumenKpiSalidas" style="color: var(--danger);">$0.00</strong>
+            <small style="color:#64748b; font-size:10px;">Compras + Gastos</small>
+          </div>
+          <div class="kpi-box">
+            <span>Balance Neto</span>
+            <strong id="resumenKpiBalance">$0.00</strong>
+            <small style="color:#64748b; font-size:10px;">Liquidez Libre</small>
+          </div>
+          <div class="kpi-box">
+            <span>Valor en Stock</span>
+            <strong id="resumenKpiStock" style="color: var(--primary);">$0.00</strong>
+            <small style="color:#64748b; font-size:10px;">Mercadería activa</small>
+          </div>
+        </div>
+
+        <h4 style="margin: 18px 0 8px 0; color: #1e293b; font-size: 14px;">⚖️ Desglose: Negocio vs. Hogar</h4>
+        <div class="tabla-responsive-wrapper">
           <table class="tabla-stock">
             <thead>
               <tr>
-                <th>Fecha / Hora</th>
-                <th>Ventas</th>
-                <th>Costo</th>
-                <th>Ganancia Neta</th>
-                <th>Stock Pasado</th>
-                <th></th>
+                <th>Área</th>
+                <th>Entradas / Ventas</th>
+                <th>Salidas / Gastos</th>
+                <th>Balance Neto</th>
+                <th>Stock Activo</th>
               </tr>
             </thead>
-            <tbody id="cuerpoTablaCierres"></tbody>
+            <tbody>
+              <tr>
+                <td><strong>🏪 Negocio</strong></td>
+                <td id="resumenNegocioVentas" style="color: var(--success);">$0.00</td>
+                <td id="resumenNegocioCostos" style="color: var(--danger);">$0.00</td>
+                <td id="resumenNegocioGanancia" style="font-weight: bold;">$0.00</td>
+                <td id="resumenNegocioStock">$0.00</td>
+              </tr>
+              <tr>
+                <td><strong>🏠 Hogar</strong></td>
+                <td id="resumenHogarIngresos" style="color: var(--success);">$0.00</td>
+                <td id="resumenHogarGastos" style="color: var(--danger);">$0.00</td>
+                <td id="resumenHogarBalance" style="font-weight: bold;">$0.00</td>
+                <td>—</td>
+              </tr>
+              <tr style="background: #f8fafc; font-weight: bold;">
+                <td>Totales</td>
+                <td id="resumenTotalEntradas" style="color: var(--success);">$0.00</td>
+                <td id="resumenTotalSalidas" style="color: var(--danger);">$0.00</td>
+                <td id="resumenTotalNeto">$0.00</td>
+                <td id="resumenTotalStock" style="color: var(--primary);">$0.00</td>
+              </tr>
+            </tbody>
           </table>
         </div>
-      </details>
 
-      <button class="btn-full btn-secondary-outline" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-top: 18px;" onclick="limpiarTodo()">🗑️ Reiniciar Todos los Datos</button>
+      </div>
     </div>
   </div>
 
   <script>
+    // DATOS NEGOCIO
     var listaIngredientes = JSON.parse(localStorage.getItem("calc_ingredientes")) || [];
     var listaProductos = JSON.parse(localStorage.getItem("calc_productos")) || [];
     var loteIngredientesUsados = JSON.parse(localStorage.getItem("calc_lote")) || [];
@@ -477,7 +707,11 @@
     var historialCierres = JSON.parse(localStorage.getItem("calc_historial_cierres")) || [];
     var modoActual = localStorage.getItem("calc_modo_vista") || "cocina";
 
-    // Función para Colapsar/Expandir cualquier paso
+    // DATOS HOGAR
+    var hogarGastos = JSON.parse(localStorage.getItem("calc_hogar_gastos")) || [];
+    var hogarIngresos = JSON.parse(localStorage.getItem("calc_hogar_ingresos")) || [];
+
+    // Colapsar/Expandir
     function togglePaso(idCuerpo, idIcono) {
       var cuerpo = document.getElementById(idCuerpo);
       var icono = document.getElementById(idIcono);
@@ -490,24 +724,51 @@
       }
     }
 
-    // Cambiar modo de operación (Cocina vs Directo)
+    // Cambiar modo de operación
     function cambiarModo(modo) {
       modoActual = modo;
       localStorage.setItem("calc_modo_vista", modo);
+      var secNegocio = document.getElementById("seccionNegocio");
+      var secHogar = document.getElementById("seccionHogar");
+      var secResumen = document.getElementById("seccionResumenGlobal");
       var card2 = document.getElementById("cardPaso2");
+
       var btnCocina = document.getElementById("modoCocinaBtn");
       var btnDirecto = document.getElementById("modoDirectoBtn");
+      var btnHogar = document.getElementById("modoHogarBtn");
+      var btnResumen = document.getElementById("modoResumenBtn");
 
-      if (modo === "directo") {
-        card2.style.display = "none";
-        btnDirecto.classList.add("activo");
-        btnCocina.classList.remove("activo");
+      btnCocina.classList.remove("activo");
+      btnDirecto.classList.remove("activo");
+      btnHogar.classList.remove("activo");
+      btnResumen.classList.remove("activo");
+
+      if (modo === "resumen") {
+        secNegocio.style.display = "none";
+        secHogar.style.display = "none";
+        secResumen.style.display = "block";
+        btnResumen.classList.add("activo");
+        renderizarResumenGlobal();
+      } else if (modo === "hogar") {
+        secNegocio.style.display = "none";
+        secHogar.style.display = "block";
+        secResumen.style.display = "none";
+        btnHogar.classList.add("activo");
+        renderizarHogar();
       } else {
-        card2.style.display = "block";
-        btnCocina.classList.add("activo");
-        btnDirecto.classList.remove("activo");
+        secNegocio.style.display = "block";
+        secHogar.style.display = "none";
+        secResumen.style.display = "none";
+
+        if (modo === "directo") {
+          card2.style.display = "none";
+          btnDirecto.classList.add("activo");
+        } else {
+          card2.style.display = "block";
+          btnCocina.classList.add("activo");
+        }
+        renderizar();
       }
-      renderizar();
     }
 
     function normalizarTexto(txt) {
@@ -522,8 +783,8 @@
 
       if (tipo === "botellas_ml") {
         mlField.style.display = "block";
-        document.getElementById("ingCantidad").placeholder = "¿Cuántas botellas? (ej. 1)";
-        precioInput.placeholder = "Precio total x botella ($)";
+        document.getElementById("ingCantidad").placeholder = "¿Cuántas botellas?";
+        precioInput.placeholder = "Precio x botella ($)";
       } else {
         mlField.style.display = "none";
         document.getElementById("ingCantidad").placeholder = "Cantidad";
@@ -556,7 +817,6 @@
 
       if (!encontrado) return null;
 
-      // Calcular consumo (si fue por receta o venta directa)
       var gastadoFisico = 0;
       if (historialProducciones.length > 0) {
         for (var p = 0; p < historialProducciones.length; p++) {
@@ -577,7 +837,6 @@
           }
         }
       } else {
-        // Modo directo: deduce directamente lo que vendiste
         for (var v = 0; v < listaProductos.length; v++) {
           var vProd = listaProductos[v];
           if (normalizarTexto(vProd.nombre) === normBuscado || normalizarTexto(vProd.nombre).includes(normBuscado) || normBuscado.includes(normalizarTexto(vProd.nombre))) {
@@ -659,7 +918,7 @@
         existente.cantidad = parseFloat((existente.cantidad + cantidadFisica).toFixed(3));
         existente.total = parseFloat((existente.total + totalDinero).toFixed(2));
         existente.precio = parseFloat((existente.total / existente.cantidad).toFixed(2));
-        alert("🔄 ¡Se sumó al stock existente de " + existente.nombre + "! Nuevo stock: " + existente.cantidad + " " + (tipo === "litros" ? "L" : tipo));
+        alert("🔄 ¡Se sumó al stock de " + existente.nombre + "! Total: " + existente.cantidad + " " + (tipo === "litros" ? "L" : tipo));
       } else {
         listaIngredientes.push({ nombre: nombre, cantidad: cantidadFisica, tipo: tipo, precio: precioUnitario, total: totalDinero });
       }
@@ -696,7 +955,7 @@
       var select = document.getElementById("loteIngredienteSelect");
       select.innerHTML = "";
       if (listaIngredientes.length === 0) {
-        select.innerHTML = "<option value=''>Agrega compras arriba primero</option>";
+        select.innerHTML = "<option value=''>Agrega insumos arriba primero</option>";
         adaptarOpcionesUnidad();
         return;
       }
@@ -803,12 +1062,11 @@
       document.getElementById("loteProdNombre").value = r.nombre;
       document.getElementById("loteUnidadesObtenidas").value = r.unidadesPorTanda;
       loteIngredientesUsados = JSON.parse(JSON.stringify(r.ingredientes));
-      
       catalogoRecetas.splice(index, 1);
       guardarEnStorage();
       renderizarLote();
       actualizarSelectRecetario();
-      alert("📋 Receta cargada arriba para editar.");
+      alert("📋 Receta cargada arriba para modificar.");
     }
 
     function eliminarRecetaSeleccionada() {
@@ -827,12 +1085,12 @@
       var select = document.getElementById("selectRecetasGuardadas");
       select.innerHTML = "";
       if (catalogoRecetas.length === 0) {
-        select.innerHTML = "<option value=''>No hay recetas guardadas aún</option>";
+        select.innerHTML = "<option value=''>No hay recetas guardadas</option>";
         actualizarVisibilidadBotonesReceta();
         return;
       }
       for (var i = 0; i < catalogoRecetas.length; i++) {
-        select.innerHTML += "<option value='" + i + "'>" + catalogoRecetas[i].nombre + " (Rinde: " + catalogoRecetas[i].unidadesPorTanda + " u/tanda)</option>";
+        select.innerHTML += "<option value='" + i + "'>" + catalogoRecetas[i].nombre + " (Rinde: " + catalogoRecetas[i].unidadesPorTanda + " u)</option>";
       }
       actualizarVisibilidadBotonesReceta();
     }
@@ -862,7 +1120,7 @@
         var itemReceta = receta.ingredientes[i];
         var stockInfo = obtenerStockTotalIngrediente(itemReceta.nombre);
         if (!stockInfo) {
-          return { alcanza: false, mensaje: "⚠️ No tienes el insumo \"" + itemReceta.nombre + "\" registrado en tus compras (Paso 1)." };
+          return { alcanza: false, mensaje: "⚠️ No tienes el insumo \"" + itemReceta.nombre + "\" en tus compras." };
         }
         var necesarioAhora = 0;
         var disponible = stockInfo.disponible;
@@ -938,15 +1196,14 @@
         return;
       }
 
-      // Si estamos en modo directo, verificar que tengamos stock del producto que se vende
       if (modoActual === "directo") {
         var stockInfo = obtenerStockTotalIngrediente(nombre);
         if (!stockInfo) {
-          alert("⚠️ No tienes '" + nombre + "' registrado en tus compras (Paso 1).");
+          alert("⚠️ No tienes '" + nombre + "' registrado en tus compras.");
           return;
         }
         if (cantidad > stockInfo.disponible) {
-          alert("❌ Stock insuficiente en despensa. Solo tienes " + stockInfo.disponible + " unidades disponibles.");
+          alert("❌ Stock insuficiente. Solo tienes " + stockInfo.disponible + " unidades disponibles.");
           return;
         }
       }
@@ -977,7 +1234,6 @@
       if (historialProducciones.length > 0) {
         for (var h = 0; h < historialProducciones.length; h++) costoUsadoTotal += historialProducciones[h].costoTotal;
       } else {
-        // En modo directo, calcular costo de compra de lo vendido
         for (var v = 0; v < listaProductos.length; v++) {
           var st = obtenerStockTotalIngrediente(listaProductos[v].nombre);
           if (st) costoUsadoTotal += (listaProductos[v].cantidad * (st.tipo === "libras" ? st.precioPorUnidadBase * 453.592 : st.precioPorUnidadBase));
@@ -1042,7 +1298,7 @@
 
       guardarEnStorage();
       renderizar();
-      alert("✅ ¡Cierre de ciclo completado y guardado en el Libro Histórico!");
+      alert("✅ ¡Cierre de ciclo completado y guardado!");
     }
 
     function borrarCierreHistorico(index) {
@@ -1054,20 +1310,221 @@
     }
 
     function limpiarTodo() {
-      if (confirm("¿Estás seguro de que deseas borrar TODOS los datos?")) {
+      if (confirm("¿Estás seguro de que deseas borrar TODOS los datos del negocio?")) {
         listaIngredientes = [];
         listaProductos = [];
         loteIngredientesUsados = [];
         historialProducciones = [];
         catalogoRecetas = [];
         historialCierres = [];
-        localStorage.clear();
+        guardarEnStorage();
         renderizarLote();
         actualizarSelectRecetario();
         renderizar();
       }
     }
 
+    // ==========================================
+    // MODO HOGAR
+    // ==========================================
+    function guardarStorageHogar() {
+      localStorage.setItem("calc_hogar_gastos", JSON.stringify(hogarGastos));
+      localStorage.setItem("calc_hogar_ingresos", JSON.stringify(hogarIngresos));
+    }
+
+    function guardarGastoHogar() {
+      var concepto = document.getElementById("hogarGastoConcepto").value.trim();
+      var categoria = document.getElementById("hogarGastoCategoria").value;
+      var monto = parseFloat(document.getElementById("hogarGastoMonto").value);
+
+      if (!concepto || isNaN(monto) || monto <= 0) {
+        alert("Ingresa un concepto y monto válido.");
+        return;
+      }
+
+      hogarGastos.push({
+        concepto: concepto,
+        categoria: categoria,
+        monto: monto,
+        fecha: new Date().toLocaleDateString()
+      });
+
+      document.getElementById("hogarGastoConcepto").value = "";
+      document.getElementById("hogarGastoMonto").value = "";
+      guardarStorageHogar();
+      renderizarHogar();
+    }
+
+    function borrarGastoHogar(index) {
+      hogarGastos.splice(index, 1);
+      guardarStorageHogar();
+      renderizarHogar();
+    }
+
+    function guardarIngresoHogar() {
+      var concepto = document.getElementById("hogarIngresoConcepto").value.trim();
+      var categoria = document.getElementById("hogarIngresoCategoria").value;
+      var monto = parseFloat(document.getElementById("hogarIngresoMonto").value);
+
+      if (!concepto || isNaN(monto) || monto <= 0) {
+        alert("Ingresa un concepto y monto válido.");
+        return;
+      }
+
+      hogarIngresos.push({
+        concepto: concepto,
+        categoria: categoria,
+        monto: monto,
+        fecha: new Date().toLocaleDateString()
+      });
+
+      document.getElementById("hogarIngresoConcepto").value = "";
+      document.getElementById("hogarIngresoMonto").value = "";
+      guardarStorageHogar();
+      renderizarHogar();
+    }
+
+    function borrarIngresoHogar(index) {
+      hogarIngresos.splice(index, 1);
+      guardarStorageHogar();
+      renderizarHogar();
+    }
+
+    function limpiarHogar() {
+      if (confirm("¿Estás seguro de que deseas borrar todos los ingresos y gastos del hogar?")) {
+        hogarGastos = [];
+        hogarIngresos = [];
+        guardarStorageHogar();
+        renderizarHogar();
+      }
+    }
+
+    function renderizarHogar() {
+      var contGastos = document.getElementById("listaGastosHogar");
+      contGastos.innerHTML = "";
+      var totalGastos = 0;
+
+      for (var i = 0; i < hogarGastos.length; i++) {
+        var g = hogarGastos[i];
+        totalGastos += g.monto;
+        contGastos.innerHTML += "<li><div><strong>" + g.concepto + "</strong> <span style='font-size:11px; color:#64748b;'>(" + g.categoria + ")</span></div>" +
+          "<div><strong style='color:var(--danger);'>-$" + g.monto.toFixed(2) + "</strong> <button class='btn-danger' onclick='borrarGastoHogar(" + i + ")'>X</button></div></li>";
+      }
+      document.getElementById("countGastosHogar").innerText = hogarGastos.length;
+
+      var contIngresos = document.getElementById("listaIngresosHogar");
+      contIngresos.innerHTML = "";
+      var totalIngresos = 0;
+
+      for (var j = 0; j < hogarIngresos.length; j++) {
+        var ing = hogarIngresos[j];
+        totalIngresos += ing.monto;
+        contIngresos.innerHTML += "<li><div><strong>" + ing.concepto + "</strong> <span style='font-size:11px; color:#64748b;'>(" + ing.categoria + ")</span></div>" +
+          "<div><strong style='color:var(--success);'>+$" + ing.monto.toFixed(2) + "</strong> <button class='btn-danger' onclick='borrarIngresoHogar(" + j + ")'>X</button></div></li>";
+      }
+      document.getElementById("countIngresosHogar").innerText = hogarIngresos.length;
+
+      var balanceHogar = totalIngresos - totalGastos;
+      document.getElementById("hogarKpiIngresos").innerText = "$" + totalIngresos.toFixed(2);
+      document.getElementById("hogarKpiGastos").innerText = "$" + totalGastos.toFixed(2);
+      document.getElementById("hogarKpiBalance").innerText = (balanceHogar >= 0 ? "+$" : "-$") + Math.abs(balanceHogar).toFixed(2);
+      document.getElementById("hogarKpiBalance").style.color = balanceHogar >= 0 ? "var(--success)" : "var(--danger)";
+
+      var cajaHogar = document.getElementById("cajaResultadoHogar");
+      if (hogarGastos.length === 0 && hogarIngresos.length === 0) {
+        cajaHogar.className = "alerta-balance alerta-neutral";
+        cajaHogar.innerText = "Registra ingresos o gastos para ver tu balance.";
+      } else if (balanceHogar > 0) {
+        cajaHogar.className = "alerta-balance alerta-ganancia";
+        cajaHogar.innerHTML = "✅ <strong>Superávit en el Hogar:</strong> Tienes <strong>+$" + balanceHogar.toFixed(2) + "</strong> disponible.";
+      } else if (balanceHogar < 0) {
+        cajaHogar.className = "alerta-balance alerta-perdida";
+        cajaHogar.innerHTML = "⚠️ <strong>Déficit Familiar:</strong> Gastos superan ingresos por <strong>-$" + Math.abs(balanceHogar).toFixed(2) + "</strong>.";
+      } else {
+        cajaHogar.className = "alerta-balance alerta-neutral";
+        cajaHogar.innerText = "⚖️ Finanzas equilibradas ($0.00).";
+      }
+    }
+
+    // ==========================================
+    // RESUMEN GLOBAL
+    // ==========================================
+    function renderizarResumenGlobal() {
+      var inversionComprasNegocio = 0;
+      for (var i = 0; i < listaIngredientes.length; i++) inversionComprasNegocio += listaIngredientes[i].total;
+
+      var ventasNegocio = 0;
+      for (var j = 0; j < listaProductos.length; j++) ventasNegocio += listaProductos[j].total;
+
+      var costoUsadoTotal = 0;
+      if (historialProducciones.length > 0) {
+        for (var h = 0; h < historialProducciones.length; h++) costoUsadoTotal += historialProducciones[h].costoTotal;
+      } else {
+        for (var v = 0; v < listaProductos.length; v++) {
+          var st = obtenerStockTotalIngrediente(listaProductos[v].nombre);
+          if (st) costoUsadoTotal += (listaProductos[v].cantidad * (st.tipo === "libras" ? st.precioPorUnidadBase * 453.592 : st.precioPorUnidadBase));
+        }
+      }
+
+      var gananciaNetaNegocio = ventasNegocio - costoUsadoTotal;
+      var valorStockRestante = Math.max(0, inversionComprasNegocio - costoUsadoTotal);
+
+      var totalGastosHogar = 0;
+      for (var g = 0; g < hogarGastos.length; g++) totalGastosHogar += hogarGastos[g].monto;
+
+      var totalIngresosHogar = 0;
+      for (var ing = 0; ing < hogarIngresos.length; ing++) totalIngresosHogar += hogarIngresos[ing].monto;
+
+      var balanceHogar = totalIngresosHogar - totalGastosHogar;
+
+      var totalEntradasGlobales = ventasNegocio + totalIngresosHogar;
+      var totalSalidasGlobales = inversionComprasNegocio + totalGastosHogar;
+      var balanceConsolidado = totalEntradasGlobales - totalSalidasGlobales;
+
+      document.getElementById("resumenKpiEntradas").innerText = "$" + totalEntradasGlobales.toFixed(2);
+      document.getElementById("resumenKpiSalidas").innerText = "$" + totalSalidasGlobales.toFixed(2);
+      document.getElementById("resumenKpiStock").innerText = "$" + valorStockRestante.toFixed(2);
+
+      var elemBalance = document.getElementById("resumenKpiBalance");
+      elemBalance.innerText = (balanceConsolidado >= 0 ? "+$" : "-$") + Math.abs(balanceConsolidado).toFixed(2);
+      elemBalance.style.color = balanceConsolidado >= 0 ? "var(--success)" : "var(--danger)";
+
+      document.getElementById("resumenNegocioVentas").innerText = "$" + ventasNegocio.toFixed(2);
+      document.getElementById("resumenNegocioCostos").innerText = "$" + inversionComprasNegocio.toFixed(2);
+      document.getElementById("resumenNegocioGanancia").innerText = (gananciaNetaNegocio >= 0 ? "+$" : "-$") + Math.abs(gananciaNetaNegocio).toFixed(2);
+      document.getElementById("resumenNegocioGanancia").style.color = gananciaNetaNegocio >= 0 ? "var(--success)" : "var(--danger)";
+      document.getElementById("resumenNegocioStock").innerText = "$" + valorStockRestante.toFixed(2);
+
+      document.getElementById("resumenHogarIngresos").innerText = "$" + totalIngresosHogar.toFixed(2);
+      document.getElementById("resumenHogarGastos").innerText = "$" + totalGastosHogar.toFixed(2);
+      document.getElementById("resumenHogarBalance").innerText = (balanceHogar >= 0 ? "+$" : "-$") + Math.abs(balanceHogar).toFixed(2);
+      document.getElementById("resumenHogarBalance").style.color = balanceHogar >= 0 ? "var(--success)" : "var(--danger)";
+
+      document.getElementById("resumenTotalEntradas").innerText = "$" + totalEntradasGlobales.toFixed(2);
+      document.getElementById("resumenTotalSalidas").innerText = "$" + totalSalidasGlobales.toFixed(2);
+      document.getElementById("resumenTotalNeto").innerText = (balanceConsolidado >= 0 ? "+$" : "-$") + Math.abs(balanceConsolidado).toFixed(2);
+      document.getElementById("resumenTotalNeto").style.color = balanceConsolidado >= 0 ? "var(--success)" : "var(--danger)";
+      document.getElementById("resumenTotalStock").innerText = "$" + valorStockRestante.toFixed(2);
+
+      var cajaDiag = document.getElementById("cajaDiagnosticoGlobal");
+      if (totalEntradasGlobales === 0 && totalSalidasGlobales === 0) {
+        cajaDiag.className = "alerta-balance alerta-neutral";
+        cajaDiag.innerText = "Registra movimientos para generar el balance.";
+      } else if (balanceConsolidado > 0) {
+        cajaDiag.className = "alerta-balance alerta-ganancia";
+        cajaDiag.innerHTML = "🌟 <strong>SALUD POSITIVA:</strong> Superávit total de <strong>+$" + balanceConsolidado.toFixed(2) + "</strong> (+<strong>$" + valorStockRestante.toFixed(2) + "</strong> en stock).";
+      } else if (balanceConsolidado < 0) {
+        cajaDiag.className = "alerta-balance alerta-perdida";
+        cajaDiag.innerHTML = "📉 <strong>DÉFICIT CONSOLIDADO:</strong> Gastos superan ingresos por <strong>-$" + Math.abs(balanceConsolidado).toFixed(2) + "</strong>.";
+      } else {
+        cajaDiag.className = "alerta-balance alerta-neutral";
+        cajaDiag.innerText = "⚖️ EQUILIBRIO PERFECTO ($0.00).";
+      }
+    }
+
+    // ==========================================
+    // RENDERIZADO NEGOCIO
+    // ==========================================
     function renderizar() {
       var contIng = document.getElementById("listaIngredientes");
       contIng.innerHTML = "";
@@ -1077,9 +1534,9 @@
         var item = listaIngredientes[i];
         inversionInventario += item.total;
         var sufijo = item.tipo === "libras" ? "lbs ($" + item.precio.toFixed(2) + "/lb)" : (item.tipo === "litros" ? "L ($" + item.precio.toFixed(2) + "/L)" : (item.tipo === "galones" ? "gal ($" + item.precio.toFixed(2) + "/gal)" : "un ($" + item.precio.toFixed(2) + " c/u)"));
-        contIng.innerHTML += "<li>" + item.nombre + " - " + item.cantidad + " " + sufijo + " = <strong>$" + item.total.toFixed(2) + "</strong> " +
-                             "<div style='display:flex; gap:5px;'>" +
-                             "<button class='btn-secondary-outline' style='padding:2px 7px; font-size:11px;' onclick='editarIngrediente(" + i + ")'>✏️</button>" +
+        contIng.innerHTML += "<li><div>" + item.nombre + " - " + item.cantidad + " " + sufijo + " = <strong>$" + item.total.toFixed(2) + "</strong></div>" +
+                             "<div style='display:flex; gap:4px;'>" +
+                             "<button class='btn-secondary-outline' style='padding:2px 6px; font-size:11px;' onclick='editarIngrediente(" + i + ")'>✏️</button>" +
                              "<button class='btn-danger' onclick='borrarIngrediente(" + i + ")'>X</button>" +
                              "</div></li>";
       }
@@ -1092,12 +1549,12 @@
       var costoHistoricoTotal = 0;
 
       if (historialProducciones.length === 0) {
-        contHist.innerHTML = "<li><small>No hay producciones registradas en este ciclo.</small></li>";
+        contHist.innerHTML = "<li><small>No hay producciones en este ciclo.</small></li>";
       } else {
         for (var h = 0; h < historialProducciones.length; h++) {
           var prod = historialProducciones[h];
           costoHistoricoTotal += prod.costoTotal;
-          contHist.innerHTML += "<li>" + prod.nombre + " — " + prod.totalUnidades + " un (" + prod.numTandas + " tandas) | Costo: <strong>$" + prod.costoTotal.toFixed(2) + "</strong> <button class='btn-danger' onclick='borrarProduccionHistorial(" + h + ")'>X</button></li>";
+          contHist.innerHTML += "<li><div>" + prod.nombre + " — " + prod.totalUnidades + " un | Costo: <strong>$" + prod.costoTotal.toFixed(2) + "</strong></div> <button class='btn-danger' onclick='borrarProduccionHistorial(" + h + ")'>X</button></li>";
         }
       }
       document.getElementById("countHistorial").innerText = historialProducciones.length;
@@ -1109,12 +1566,11 @@
       for (var j = 0; j < listaProductos.length; j++) {
         var p = listaProductos[j];
         ventaTotal += p.total;
-        contProd.innerHTML += "<li>" + p.nombre + " - " + p.cantidad + " " + (p.tipo === "libras" ? "lbs" : "un") + " a $" + p.precio.toFixed(2) + " = <strong>$" + p.total.toFixed(2) + "</strong> <button class='btn-danger' onclick='borrarProducto(" + j + ")'>X</button></li>";
+        contProd.innerHTML += "<li><div>" + p.nombre + " - " + p.cantidad + " " + (p.tipo === "libras" ? "lbs" : "un") + " a $" + p.precio.toFixed(2) + " = <strong>$" + p.total.toFixed(2) + "</strong></div> <button class='btn-danger' onclick='borrarProducto(" + j + ")'>X</button></li>";
       }
       document.getElementById("totalVentas").innerText = ventaTotal.toFixed(2);
       document.getElementById("countVentas").innerText = listaProductos.length;
 
-      // En modo directo sin recetas, calculamos el costo de compra de lo que vendiste
       if (modoActual === "directo" && historialProducciones.length === 0) {
         costoHistoricoTotal = 0;
         for (var v = 0; v < listaProductos.length; v++) {
@@ -1151,21 +1607,21 @@
 
         if (balanceProduccion > 0) {
           cajaTanda.className = "alerta-balance alerta-ganancia";
-          cajaTanda.innerHTML = "✅ <strong>GANANCIA NETA REAL: +$" + balanceProduccion.toFixed(2) + "</strong> (Ventas: $" + ventaTotal.toFixed(2) + " - Costo mercadería: $" + costoHistoricoTotal.toFixed(2) + ")";
+          cajaTanda.innerHTML = "✅ <strong>GANANCIA REAL: +$" + balanceProduccion.toFixed(2) + "</strong> (Ventas: $" + ventaTotal.toFixed(2) + " - Costo: $" + costoHistoricoTotal.toFixed(2) + ")";
         } else if (balanceProduccion < 0) {
           cajaTanda.className = "alerta-balance alerta-perdida";
           cajaTanda.innerHTML = "❌ <strong>PÉRDIDA DEL CICLO: -$" + Math.abs(balanceProduccion).toFixed(2) + "</strong>";
         } else {
           cajaTanda.className = "alerta-balance alerta-neutral";
-          cajaTanda.innerText = "⚖️ PUNTO DE EQUILIBRIO: $0.00";
+          cajaTanda.innerText = "⚖️ EQUILIBRIO: $0.00";
         }
 
         if (balanceGlobal < 0) {
           cajaGlobal.className = "alerta-balance alerta-perdida";
-          cajaGlobal.innerHTML = "📉 <strong>ESTADO DE INVERSIÓN:</strong> Faltan <strong>-$" + Math.abs(balanceGlobal).toFixed(2) + "</strong> para amortizar todas las compras. (Tienes <strong>$" + Math.max(0, inversionInventario - costoHistoricoTotal).toFixed(2) + "</strong> en stock restante).";
+          cajaGlobal.innerHTML = "📉 <strong>Faltan -$" + Math.abs(balanceGlobal).toFixed(2) + "</strong> para amortizar compras (Stock restante: $" + Math.max(0, inversionInventario - costoHistoricoTotal).toFixed(2) + ").";
         } else {
           cajaGlobal.className = "alerta-balance alerta-ganancia";
-          cajaGlobal.innerHTML = "🎉 <strong>¡INVERSIÓN AMORTIZADA!</strong> Ganancia líquida libre de <strong>+$" + balanceGlobal.toFixed(2) + "</strong> y el stock sobrante es ganancia pura.";
+          cajaGlobal.innerHTML = "🎉 <strong>¡Inversión amortizada!</strong> Ganancia líquida de +$" + balanceGlobal.toFixed(2) + ".";
         }
       }
 
@@ -1184,10 +1640,10 @@
 
             var restanteTxt = "", valorRestante = 0;
             if (stockInfo.tipo === "libras") {
-              restanteTxt = "<strong>" + (stockInfo.disponible / 453.592).toFixed(2) + " lb</strong> (" + stockInfo.disponible.toFixed(0) + " g)";
+              restanteTxt = "<strong>" + (stockInfo.disponible / 453.592).toFixed(2) + " lb</strong>";
               valorRestante = stockInfo.disponible * stockInfo.precioPorUnidadBase;
             } else if (stockInfo.tipo === "litros" || stockInfo.tipo === "galones" || stockInfo.tipo === "botellas_ml") {
-              restanteTxt = "<strong>" + (stockInfo.disponible / 1000).toFixed(3) + " L</strong> (" + stockInfo.disponible.toFixed(0) + " ml)";
+              restanteTxt = "<strong>" + (stockInfo.disponible / 1000).toFixed(3) + " L</strong>";
               valorRestante = stockInfo.disponible * stockInfo.precioPorUnidadBase;
             } else {
               restanteTxt = "<strong>" + stockInfo.disponible + " un</strong>";
@@ -1204,7 +1660,7 @@
       var gananciaHistoricaAcumulada = 0;
 
       if (historialCierres.length === 0) {
-        tablaCierres.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#94a3b8;'>No has realizado cierres de ciclo aún.</td></tr>";
+        tablaCierres.innerHTML = "<tr><td colspan='6' style='text-align:center; color:#94a3b8;'>Sin cierres registrados aún.</td></tr>";
       } else {
         for (var c = 0; c < historialCierres.length; c++) {
           var cierre = historialCierres[c];
@@ -1226,6 +1682,7 @@
       document.getElementById("gananciaHistoricaTotal").innerText = (gananciaHistoricaAcumulada >= 0 ? "+$" : "-$") + Math.abs(gananciaHistoricaAcumulada).toFixed(2);
     }
 
+    // Inicio
     actualizarCamposCompra();
     cambiarModo(modoActual);
     renderizarLote();
