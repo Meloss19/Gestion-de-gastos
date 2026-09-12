@@ -47,7 +47,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* Barra de Selector de Modo Responsive */
+    /* Selector de Vistas */
     .selector-modo {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -89,7 +89,6 @@
       box-shadow: 0 0 0 3px #86efac, 0 8px 16px rgba(22, 163, 74, 0.15);
     }
 
-    /* Encabezados */
     .paso-header {
       padding: 14px 16px;
       font-weight: 700;
@@ -120,7 +119,6 @@
     .paso-body { padding: 16px; }
     .paso-body.oculto { display: none; }
 
-    /* Inputs y Formularios Adaptables */
     .form-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
@@ -282,7 +280,6 @@
     .alerta-perdida { background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca; }
     .alerta-neutral { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
 
-    /* Envoltura para Tablas Responsivas en Móviles */
     .tabla-responsive-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -308,7 +305,6 @@
 
     table.tabla-stock th { background: #f8fafc; font-weight: 600; color: #475569; }
 
-    /* Ajustes específicos para móviles */
     @media (max-width: 600px) {
       body { padding: 10px 8px 30px; }
       .paso-body { padding: 12px; }
@@ -319,7 +315,7 @@
 </head>
 <body>
 
-  <h1>📊 Gestión: Negocio y Hogar</h1>
+  <h1>📊 Panel: Negocio y Hogar</h1>
 
   <!-- Selector de Vistas -->
   <div class="selector-modo">
@@ -624,7 +620,7 @@
     <div class="paso-card">
       <div class="paso-header header-resumen-global">
         <div class="header-titulo">
-          <span>🌐</span> Resumen Total Consolidado
+          <span>🌐</span> Resumen Total Consolidado (Flujo de Caja Real)
         </div>
       </div>
       <div class="paso-body">
@@ -634,24 +630,24 @@
         <!-- KPIs GLOBALES -->
         <div class="kpi-grid">
           <div class="kpi-box">
-            <span>Entradas Totales</span>
+            <span>Dinero Total Entrado</span>
             <strong id="resumenKpiEntradas" style="color: var(--success);">$0.00</strong>
-            <small style="color:#64748b; font-size:10px;">Ventas + Sueldos</small>
+            <small style="color:#64748b; font-size:10px;">Ventas Cobradas + Sueldos</small>
           </div>
           <div class="kpi-box">
-            <span>Salidas Totales</span>
+            <span>Dinero Total Salido</span>
             <strong id="resumenKpiSalidas" style="color: var(--danger);">$0.00</strong>
-            <small style="color:#64748b; font-size:10px;">Compras + Gastos</small>
+            <small style="color:#64748b; font-size:10px;">Gastos Hogar Pagados</small>
           </div>
           <div class="kpi-box">
-            <span>Balance Neto</span>
+            <span>Efectivo en Mano</span>
             <strong id="resumenKpiBalance">$0.00</strong>
-            <small style="color:#64748b; font-size:10px;">Liquidez Libre</small>
+            <small style="color:#64748b; font-size:10px;">Dinero Líquido Disponible</small>
           </div>
           <div class="kpi-box">
             <span>Valor en Stock</span>
             <strong id="resumenKpiStock" style="color: var(--primary);">$0.00</strong>
-            <small style="color:#64748b; font-size:10px;">Mercadería activa</small>
+            <small style="color:#64748b; font-size:10px;">Mercadería en Despensa</small>
           </div>
         </div>
 
@@ -661,17 +657,17 @@
             <thead>
               <tr>
                 <th>Área</th>
-                <th>Entradas / Ventas</th>
-                <th>Salidas / Gastos</th>
-                <th>Balance Neto</th>
-                <th>Stock Activo</th>
+                <th>Entradas (Cobrado)</th>
+                <th>Salidas (Gastado)</th>
+                <th>Efectivo Libre</th>
+                <th>Stock en Despensa</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>🏪 Negocio</strong></td>
                 <td id="resumenNegocioVentas" style="color: var(--success);">$0.00</td>
-                <td id="resumenNegocioCostos" style="color: var(--danger);">$0.00</td>
+                <td id="resumenNegocioCostos" style="color: var(--slate);">$0.00</td>
                 <td id="resumenNegocioGanancia" style="font-weight: bold;">$0.00</td>
                 <td id="resumenNegocioStock">$0.00</td>
               </tr>
@@ -784,7 +780,7 @@
       if (tipo === "botellas_ml") {
         mlField.style.display = "block";
         document.getElementById("ingCantidad").placeholder = "¿Cuántas botellas?";
-        precioInput.placeholder = "Precio x botella ($)";
+        precioInput.placeholder = "Precio total x botella ($)";
       } else {
         mlField.style.display = "none";
         document.getElementById("ingCantidad").placeholder = "Cantidad";
@@ -1447,78 +1443,87 @@
     }
 
     // ==========================================
-    // RESUMEN GLOBAL
+    // RESUMEN GLOBAL (LÓGICA REAL: FLUJO DE CAJA)
     // ==========================================
     function renderizarResumenGlobal() {
-      var inversionComprasNegocio = 0;
-      for (var i = 0; i < listaIngredientes.length; i++) inversionComprasNegocio += listaIngredientes[i].total;
+      // 1. Total Ventas Históricas + Ventas Ciclo Activo
+      var totalVentasCobradas = 0;
+      for (var c = 0; c < historialCierres.length; c++) {
+        totalVentasCobradas += historialCierres[c].ventas;
+      }
+      for (var j = 0; j < listaProductos.length; j++) {
+        totalVentasCobradas += listaProductos[j].total;
+      }
 
-      var ventasNegocio = 0;
-      for (var j = 0; j < listaProductos.length; j++) ventasNegocio += listaProductos[j].total;
-
-      var costoUsadoTotal = 0;
-      if (historialProducciones.length > 0) {
-        for (var h = 0; h < historialProducciones.length; h++) costoUsadoTotal += historialProducciones[h].costoTotal;
-      } else {
-        for (var v = 0; v < listaProductos.length; v++) {
-          var st = obtenerStockTotalIngrediente(listaProductos[v].nombre);
-          if (st) costoUsadoTotal += (listaProductos[v].cantidad * (st.tipo === "libras" ? st.precioPorUnidadBase * 453.592 : st.precioPorUnidadBase));
+      // 2. Stock físico real en despensa
+      var valorStockRestante = 0;
+      var procesadosSobrantes = {};
+      for (var k = 0; k < listaIngredientes.length; k++) {
+        var ingActual = listaIngredientes[k];
+        var norm = normalizarTexto(ingActual.nombre);
+        if (!procesadosSobrantes[norm]) {
+          procesadosSobrantes[norm] = true;
+          var stockInfo = obtenerStockTotalIngrediente(ingActual.nombre);
+          if (stockInfo && stockInfo.disponible > 0) {
+            valorStockRestante += (stockInfo.disponible * stockInfo.precioPorUnidadBase);
+          }
         }
       }
 
-      var gananciaNetaNegocio = ventasNegocio - costoUsadoTotal;
-      var valorStockRestante = Math.max(0, inversionComprasNegocio - costoUsadoTotal);
-
+      // 3. Finanzas del Hogar
       var totalGastosHogar = 0;
       for (var g = 0; g < hogarGastos.length; g++) totalGastosHogar += hogarGastos[g].monto;
 
       var totalIngresosHogar = 0;
       for (var ing = 0; ing < hogarIngresos.length; ing++) totalIngresosHogar += hogarIngresos[ing].monto;
 
-      var balanceHogar = totalIngresosHogar - totalGastosHogar;
+      // 4. Totales Reales de Flujo de Caja
+      var entradasGlobales = totalVentasCobradas + totalIngresosHogar;
+      var salidasGlobales = totalGastosHogar; // Los gastos pagados de la casa
+      var efectivoEnMano = entradasGlobales - salidasGlobales;
 
-      var totalEntradasGlobales = ventasNegocio + totalIngresosHogar;
-      var totalSalidasGlobales = inversionComprasNegocio + totalGastosHogar;
-      var balanceConsolidado = totalEntradasGlobales - totalSalidasGlobales;
-
-      document.getElementById("resumenKpiEntradas").innerText = "$" + totalEntradasGlobales.toFixed(2);
-      document.getElementById("resumenKpiSalidas").innerText = "$" + totalSalidasGlobales.toFixed(2);
+      // Actualizar KPIs
+      document.getElementById("resumenKpiEntradas").innerText = "$" + entradasGlobales.toFixed(2);
+      document.getElementById("resumenKpiSalidas").innerText = "$" + salidasGlobales.toFixed(2);
       document.getElementById("resumenKpiStock").innerText = "$" + valorStockRestante.toFixed(2);
 
       var elemBalance = document.getElementById("resumenKpiBalance");
-      elemBalance.innerText = (balanceConsolidado >= 0 ? "+$" : "-$") + Math.abs(balanceConsolidado).toFixed(2);
-      elemBalance.style.color = balanceConsolidado >= 0 ? "var(--success)" : "var(--danger)";
+      elemBalance.innerText = (efectivoEnMano >= 0 ? "+$" : "-$") + Math.abs(efectivoEnMano).toFixed(2);
+      elemBalance.style.color = efectivoEnMano >= 0 ? "var(--success)" : "var(--danger)";
 
-      document.getElementById("resumenNegocioVentas").innerText = "$" + ventasNegocio.toFixed(2);
-      document.getElementById("resumenNegocioCostos").innerText = "$" + inversionComprasNegocio.toFixed(2);
-      document.getElementById("resumenNegocioGanancia").innerText = (gananciaNetaNegocio >= 0 ? "+$" : "-$") + Math.abs(gananciaNetaNegocio).toFixed(2);
-      document.getElementById("resumenNegocioGanancia").style.color = gananciaNetaNegocio >= 0 ? "var(--success)" : "var(--danger)";
+      // Tabla comparativa Negocio vs Hogar
+      document.getElementById("resumenNegocioVentas").innerText = "$" + totalVentasCobradas.toFixed(2);
+      document.getElementById("resumenNegocioCostos").innerText = "$0.00";
+      document.getElementById("resumenNegocioGanancia").innerText = "+$" + totalVentasCobradas.toFixed(2);
+      document.getElementById("resumenNegocioGanancia").style.color = "var(--success)";
       document.getElementById("resumenNegocioStock").innerText = "$" + valorStockRestante.toFixed(2);
 
       document.getElementById("resumenHogarIngresos").innerText = "$" + totalIngresosHogar.toFixed(2);
       document.getElementById("resumenHogarGastos").innerText = "$" + totalGastosHogar.toFixed(2);
+      var balanceHogar = totalIngresosHogar - totalGastosHogar;
       document.getElementById("resumenHogarBalance").innerText = (balanceHogar >= 0 ? "+$" : "-$") + Math.abs(balanceHogar).toFixed(2);
       document.getElementById("resumenHogarBalance").style.color = balanceHogar >= 0 ? "var(--success)" : "var(--danger)";
 
-      document.getElementById("resumenTotalEntradas").innerText = "$" + totalEntradasGlobales.toFixed(2);
-      document.getElementById("resumenTotalSalidas").innerText = "$" + totalSalidasGlobales.toFixed(2);
-      document.getElementById("resumenTotalNeto").innerText = (balanceConsolidado >= 0 ? "+$" : "-$") + Math.abs(balanceConsolidado).toFixed(2);
-      document.getElementById("resumenTotalNeto").style.color = balanceConsolidado >= 0 ? "var(--success)" : "var(--danger)";
+      document.getElementById("resumenTotalEntradas").innerText = "$" + entradasGlobales.toFixed(2);
+      document.getElementById("resumenTotalSalidas").innerText = "$" + salidasGlobales.toFixed(2);
+      document.getElementById("resumenTotalNeto").innerText = (efectivoEnMano >= 0 ? "+$" : "-$") + Math.abs(efectivoEnMano).toFixed(2);
+      document.getElementById("resumenTotalNeto").style.color = efectivoEnMano >= 0 ? "var(--success)" : "var(--danger)";
       document.getElementById("resumenTotalStock").innerText = "$" + valorStockRestante.toFixed(2);
 
+      // Diagnóstico Claro
       var cajaDiag = document.getElementById("cajaDiagnosticoGlobal");
-      if (totalEntradasGlobales === 0 && totalSalidasGlobales === 0) {
+      if (entradasGlobales === 0 && salidasGlobales === 0) {
         cajaDiag.className = "alerta-balance alerta-neutral";
-        cajaDiag.innerText = "Registra movimientos para generar el balance.";
-      } else if (balanceConsolidado > 0) {
+        cajaDiag.innerText = "Registra movimientos para generar el balance de caja.";
+      } else if (efectivoEnMano > 0) {
         cajaDiag.className = "alerta-balance alerta-ganancia";
-        cajaDiag.innerHTML = "🌟 <strong>SALUD POSITIVA:</strong> Superávit total de <strong>+$" + balanceConsolidado.toFixed(2) + "</strong> (+<strong>$" + valorStockRestante.toFixed(2) + "</strong> en stock).";
-      } else if (balanceConsolidado < 0) {
+        cajaDiag.innerHTML = "🌟 <strong>SUPERÁVIT TOTAL EN MANO:</strong> Te quedan <strong>+$" + efectivoEnMano.toFixed(2) + "</strong> en efectivo libre disponible, y además tienes <strong>$" + valorStockRestante.toFixed(2) + "</strong> en mercadería física en despensa.";
+      } else if (efectivoEnMano < 0) {
         cajaDiag.className = "alerta-balance alerta-perdida";
-        cajaDiag.innerHTML = "📉 <strong>DÉFICIT CONSOLIDADO:</strong> Gastos superan ingresos por <strong>-$" + Math.abs(balanceConsolidado).toFixed(2) + "</strong>.";
+        cajaDiag.innerHTML = "📉 <strong>FALTANTE EN EFECTIVO:</strong> Faltan <strong>-$" + Math.abs(efectivoEnMano).toFixed(2) + "</strong> para cubrir los gastos del hogar (Tienes <strong>$" + valorStockRestante.toFixed(2) + "</strong> en stock para vender).";
       } else {
         cajaDiag.className = "alerta-balance alerta-neutral";
-        cajaDiag.innerText = "⚖️ EQUILIBRIO PERFECTO ($0.00).";
+        cajaDiag.innerText = "⚖️ EQUILIBRIO PERFECTO: Las entradas cubren exactamente las salidas ($0.00).";
       }
     }
 
