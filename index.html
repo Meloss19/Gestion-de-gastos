@@ -202,6 +202,18 @@
       border-radius: 8px;
     }
     .btn-stock-update:hover { background: linear-gradient(135deg, #0369a1, #075985); }
+    
+    .btn-hogar-cierre {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+    .btn-hogar-cierre:hover { background: linear-gradient(135deg, #4f46e5, #4338ca); }
+
     .btn-full { width: 100%; margin-top: 12px; }
 
     .sub-seccion {
@@ -526,7 +538,7 @@
     <div class="paso-card">
       <div class="paso-header header-hogar-gastos" onclick="togglePaso('cuerpoHogarGastos', 'iconoHogarG')">
         <div class="header-titulo">
-          <span>💸</span> Gastos de la Casa
+          <span>💸</span> Gastos de la Casa (Mes en Curso)
         </div>
         <span class="header-icono-toggle" id="iconoHogarG">▼</span>
       </div>
@@ -546,7 +558,7 @@
         </div>
 
         <details class="historial-box" open>
-          <summary>📋 Gastos Registrados (<span id="countGastosHogar">0</span>)</summary>
+          <summary>📋 Gastos Registrados Este Mes (<span id="countGastosHogar">0</span>)</summary>
           <div class="scroll-container">
             <ul class="lista-items" id="listaGastosHogar"></ul>
           </div>
@@ -558,7 +570,7 @@
     <div class="paso-card">
       <div class="paso-header header-hogar-ingresos" onclick="togglePaso('cuerpoHogarIngresos', 'iconoHogarI')">
         <div class="header-titulo">
-          <span>💵</span> Ingresos Familiares / Personales
+          <span>💵</span> Ingresos Familiares / Personales (Mes en Curso)
         </div>
         <span class="header-icono-toggle" id="iconoHogarI">▼</span>
       </div>
@@ -576,7 +588,7 @@
         </div>
 
         <details class="historial-box" open>
-          <summary>📋 Ingresos Registrados (<span id="countIngresosHogar">0</span>)</summary>
+          <summary>📋 Ingresos Registrados Este Mes (<span id="countIngresosHogar">0</span>)</summary>
           <div class="scroll-container">
             <ul class="lista-items" id="listaIngresosHogar"></ul>
           </div>
@@ -584,11 +596,11 @@
       </div>
     </div>
 
-    <!-- DASHBOARD HOGAR -->
+    <!-- DASHBOARD HOGAR & CIERRE MENSUAL -->
     <div class="paso-card">
       <div class="paso-header header-hogar-dash" onclick="togglePaso('cuerpoHogarDash', 'iconoHogarD')">
         <div class="header-titulo">
-          <span>📊</span> Balance Financiero del Hogar
+          <span>📊</span> Balance del Hogar y Cierre de Mes
         </div>
         <span class="header-icono-toggle" id="iconoHogarD">▼</span>
       </div>
@@ -597,20 +609,49 @@
 
         <div class="kpi-grid">
           <div class="kpi-box">
-            <span>Ingresos Hogar</span>
+            <span>Ingresos Este Mes</span>
             <strong id="hogarKpiIngresos" style="color: var(--success);">$0.00</strong>
           </div>
           <div class="kpi-box">
-            <span>Gastos Hogar</span>
+            <span>Gastos Este Mes</span>
             <strong id="hogarKpiGastos" style="color: var(--danger);">$0.00</strong>
           </div>
           <div class="kpi-box">
-            <span>Disponible</span>
+            <span>Disponible Mes</span>
             <strong id="hogarKpiBalance">$0.00</strong>
           </div>
         </div>
 
-        <button class="btn-full btn-secondary-outline" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-top: 14px;" onclick="limpiarHogar()">🗑️ Reiniciar Datos del Hogar</button>
+        <!-- Botón Cierre de Periodo Hogar -->
+        <button class="btn-hogar-cierre" onclick="cerrarPeriodoHogar()">
+          🔄 Cerrar Periodo / Mes del Hogar (Archivar y Limpiar)
+        </button>
+
+        <!-- Historial de Meses Pasados del Hogar -->
+        <details class="historial-box" style="margin-top: 16px;">
+          <summary>📚 Historial de Meses Pasados del Hogar (<span id="countCierresHogar">0</span>)</summary>
+          <div class="scroll-container" style="max-height: 250px;">
+            <div style="padding: 4px 0 8px; font-size: 13px;">
+              <strong>Balance Histórico Total Acumulado: <span id="hogarHistoricoTotal" style="color: var(--success);">$0.00</span></strong>
+            </div>
+            <div class="tabla-responsive-wrapper">
+              <table class="tabla-stock">
+                <thead>
+                  <tr>
+                    <th>Fecha / Periodo</th>
+                    <th>Ingresos</th>
+                    <th>Gastos</th>
+                    <th>Balance Neto</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="cuerpoTablaCierresHogar"></tbody>
+              </table>
+            </div>
+          </div>
+        </details>
+
+        <button class="btn-full btn-secondary-outline" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-top: 14px;" onclick="limpiarHogar()">🗑️ Reiniciar Todos los Datos del Hogar</button>
       </div>
     </div>
   </div>
@@ -706,6 +747,7 @@
     // DATOS HOGAR
     var hogarGastos = JSON.parse(localStorage.getItem("calc_hogar_gastos")) || [];
     var hogarIngresos = JSON.parse(localStorage.getItem("calc_hogar_ingresos")) || [];
+    var historialCierresHogar = JSON.parse(localStorage.getItem("calc_hogar_cierres")) || [];
 
     // Colapsar/Expandir
     function togglePaso(idCuerpo, idIcono) {
@@ -1321,11 +1363,12 @@
     }
 
     // ==========================================
-    // MODO HOGAR
+    // MODO HOGAR & HISTÓRICO DE MESES
     // ==========================================
     function guardarStorageHogar() {
       localStorage.setItem("calc_hogar_gastos", JSON.stringify(hogarGastos));
       localStorage.setItem("calc_hogar_ingresos", JSON.stringify(hogarIngresos));
+      localStorage.setItem("calc_hogar_cierres", JSON.stringify(historialCierresHogar));
     }
 
     function guardarGastoHogar() {
@@ -1386,10 +1429,52 @@
       renderizarHogar();
     }
 
+    function cerrarPeriodoHogar() {
+      if (hogarGastos.length === 0 && hogarIngresos.length === 0) {
+        alert("No hay ingresos ni gastos registrados este mes para cerrar.");
+        return;
+      }
+
+      if (!confirm("¿Deseas cerrar este mes/periodo del hogar?\n\n• Se guardará el resumen en el Historial del Hogar.\n• La pantalla se limpiará para empezar el nuevo mes.")) return;
+
+      var totalGastos = 0;
+      for (var i = 0; i < hogarGastos.length; i++) totalGastos += hogarGastos[i].monto;
+
+      var totalIngresos = 0;
+      for (var j = 0; j < hogarIngresos.length; j++) totalIngresos += hogarIngresos[j].monto;
+
+      var balanceMes = totalIngresos - totalGastos;
+      var ahora = new Date();
+      var fechaPeriodo = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      historialCierresHogar.unshift({
+        fecha: fechaPeriodo,
+        ingresos: totalIngresos,
+        gastos: totalGastos,
+        balance: balanceMes
+      });
+
+      hogarGastos = [];
+      hogarIngresos = [];
+
+      guardarStorageHogar();
+      renderizarHogar();
+      alert("✅ ¡Periodo del hogar guardado en el Historial con éxito!");
+    }
+
+    function borrarCierreHogar(index) {
+      if (confirm("¿Eliminar este registro histórico del hogar?")) {
+        historialCierresHogar.splice(index, 1);
+        guardarStorageHogar();
+        renderizarHogar();
+      }
+    }
+
     function limpiarHogar() {
-      if (confirm("¿Estás seguro de que deseas borrar todos los ingresos y gastos del hogar?")) {
+      if (confirm("¿Estás seguro de que deseas borrar TODOS los datos e historial del hogar?")) {
         hogarGastos = [];
         hogarIngresos = [];
+        historialCierresHogar = [];
         guardarStorageHogar();
         renderizarHogar();
       }
@@ -1429,24 +1514,50 @@
       var cajaHogar = document.getElementById("cajaResultadoHogar");
       if (hogarGastos.length === 0 && hogarIngresos.length === 0) {
         cajaHogar.className = "alerta-balance alerta-neutral";
-        cajaHogar.innerText = "Registra ingresos o gastos para ver tu balance.";
+        cajaHogar.innerText = "Registra ingresos o gastos para ver tu balance este mes.";
       } else if (balanceHogar > 0) {
         cajaHogar.className = "alerta-balance alerta-ganancia";
-        cajaHogar.innerHTML = "✅ <strong>Superávit en el Hogar:</strong> Tienes <strong>+$" + balanceHogar.toFixed(2) + "</strong> disponible.";
+        cajaHogar.innerHTML = "✅ <strong>Superávit Este Mes:</strong> Tienes <strong>+$" + balanceHogar.toFixed(2) + "</strong> disponible.";
       } else if (balanceHogar < 0) {
         cajaHogar.className = "alerta-balance alerta-perdida";
-        cajaHogar.innerHTML = "⚠️ <strong>Déficit Familiar:</strong> Gastos superan ingresos por <strong>-$" + Math.abs(balanceHogar).toFixed(2) + "</strong>.";
+        cajaHogar.innerHTML = "⚠️ <strong>Déficit Este Mes:</strong> Gastos superan ingresos por <strong>-$" + Math.abs(balanceHogar).toFixed(2) + "</strong>.";
       } else {
         cajaHogar.className = "alerta-balance alerta-neutral";
-        cajaHogar.innerText = "⚖️ Finanzas equilibradas ($0.00).";
+        cajaHogar.innerText = "⚖️ Finanzas equilibradas este mes ($0.00).";
       }
+
+      // Renderizar Historial de Meses Pasados
+      var tablaHogar = document.getElementById("cuerpoTablaCierresHogar");
+      tablaHogar.innerHTML = "";
+      var balanceHistoricoAcumulado = 0;
+
+      if (historialCierresHogar.length === 0) {
+        tablaHogar.innerHTML = "<tr><td colspan='5' style='text-align:center; color:#94a3b8;'>Sin cierres mensuales archivados aún.</td></tr>";
+      } else {
+        for (var c = 0; c < historialCierresHogar.length; c++) {
+          var cierre = historialCierresHogar[c];
+          balanceHistoricoAcumulado += cierre.balance;
+          var colorBal = cierre.balance >= 0 ? "color: var(--success);" : "color: var(--danger);";
+          var signo = cierre.balance >= 0 ? "+$" : "-$";
+
+          tablaHogar.innerHTML += "<tr>" +
+            "<td>" + cierre.fecha + "</td>" +
+            "<td>$" + cierre.ingresos.toFixed(2) + "</td>" +
+            "<td>$" + cierre.gastos.toFixed(2) + "</td>" +
+            "<td style='font-weight:bold; " + colorBal + "'>" + signo + Math.abs(cierre.balance).toFixed(2) + "</td>" +
+            "<td><button class='btn-danger' onclick='borrarCierreHogar(" + c + ")'>X</button></td>" +
+          "</tr>";
+        }
+      }
+      document.getElementById("countCierresHogar").innerText = historialCierresHogar.length;
+      document.getElementById("hogarHistoricoTotal").innerText = (balanceHistoricoAcumulado >= 0 ? "+$" : "-$") + Math.abs(balanceHistoricoAcumulado).toFixed(2);
     }
 
     // ==========================================
-    // RESUMEN GLOBAL (LÓGICA REAL: FLUJO DE CAJA)
+    // RESUMEN GLOBAL (LÓGICA REAL: FLUJO DE CAJA CONSOLIDADO)
     // ==========================================
     function renderizarResumenGlobal() {
-      // 1. Total Ventas Históricas + Ventas Ciclo Activo
+      // 1. Total Ventas Negocio (Histórico + Activo)
       var totalVentasCobradas = 0;
       for (var c = 0; c < historialCierres.length; c++) {
         totalVentasCobradas += historialCierres[c].ventas;
@@ -1470,16 +1581,26 @@
         }
       }
 
-      // 3. Finanzas del Hogar
+      // 3. Finanzas del Hogar (Histórico + Activo)
       var totalGastosHogar = 0;
-      for (var g = 0; g < hogarGastos.length; g++) totalGastosHogar += hogarGastos[g].monto;
+      for (var hc = 0; hc < historialCierresHogar.length; hc++) {
+        totalGastosHogar += historialCierresHogar[hc].gastos;
+      }
+      for (var g = 0; g < hogarGastos.length; g++) {
+        totalGastosHogar += hogarGastos[g].monto;
+      }
 
       var totalIngresosHogar = 0;
-      for (var ing = 0; ing < hogarIngresos.length; ing++) totalIngresosHogar += hogarIngresos[ing].monto;
+      for (var hi = 0; hi < historialCierresHogar.length; hi++) {
+        totalIngresosHogar += historialCierresHogar[hi].ingresos;
+      }
+      for (var ing = 0; ing < hogarIngresos.length; ing++) {
+        totalIngresosHogar += hogarIngresos[ing].monto;
+      }
 
       // 4. Totales Reales de Flujo de Caja
       var entradasGlobales = totalVentasCobradas + totalIngresosHogar;
-      var salidasGlobales = totalGastosHogar; // Los gastos pagados de la casa
+      var salidasGlobales = totalGastosHogar;
       var efectivoEnMano = entradasGlobales - salidasGlobales;
 
       // Actualizar KPIs
